@@ -1,0 +1,53 @@
+
+******************//First Answer//***********************************
+
+CREATE DATABASE E15220;
+
+CREATE TABLE items(
+   ordernumber int(6) NOT NULL AUTO_INCREMENT,
+   color VARCHAR(10) NOT NULL,
+   size VARCHAR(10) NOT NULL,
+   comments VARCHAR(200),
+   cap VARCHAR(3),
+   wristband VARCHAR(3),
+   PRIMARY KEY (ordernumber)
+);
+
+CREATE TABLE customers(
+   fname VARCHAR(25) NOT NULL,
+   lname VARCHAR(25) NOT NULL,
+   address1 VARCHAR(25) NOT NULL,
+   address2 VARCHAR(25) NOT NULL,
+   address3 VARCHAR(25) NOT NULL,
+   ordernumber int(6) NOT NULL,
+   PRIMARY KEY (fname,lname),
+   FOREIGN KEY (ordernumber) REFERENCES items(ordernumber)
+);
+
+*********************************************************************
+*********************************************************************
+
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+
+*****************//Second Answer//***********************************
+
+
+CREATE DATABASE E15220;
+
+CREATE TABLE orders(
+   fname VARCHAR(25) NOT NULL,
+   lname VARCHAR(25) NOT NULL,
+   address1 VARCHAR(25) NOT NULL,
+   address2 VARCHAR(25) NOT NULL,
+   address3 VARCHAR(25) NOT NULL,
+   ordernumber int(6) NOT NULL AUTO_INCREMENT,
+   color VARCHAR(10) NOT NULL,
+   size VARCHAR(10) NOT NULL,
+   comments VARCHAR(200),
+   cap VARCHAR(3),
+   wristband VARCHAR(3),
+   PRIMARY KEY (ordernumber)
+);
+
+*********************************************************************

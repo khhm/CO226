@@ -1,0 +1,478 @@
+01)
+a)
+SELECT * FROM MOVIE WHERE director IN(SELECT rname FROM REVIEWER);
++-----+---------+------+---------------+
+| mid | title   | year | director      |
++-----+---------+------+---------------+
+| 105 | Titanic | 1997 | James Cameron |
+| 107 | Avatar  | 2009 | James Cameron |
++-----+---------+------+---------------+
+2 rows in set (0.00 sec)
+
+b)
+SELECT * FROM MOVIE WHERE director NOT IN(SELECT rname FROM REVIEWER);
++-----+-------------------------+------+------------------+
+| mid | title                   | year | director         |
++-----+-------------------------+------+------------------+
+| 101 | Gone with the Wind      | 1939 | Victor Fleming   |
+| 102 | Star Wars               | 1977 | George Lucas     |
+| 103 | The Sound of Music      | 1965 | Robert Wise      |
+| 104 | E.T.                    | 1982 | Steven Spieibrg  |
+| 108 | Raiders of the Lost Ark | 1981 | Steven Spielberg |
++-----+-------------------------+------+------------------+
+5 rows in set (0.00 sec)
+
+
+02)
+a)
+SELECT * FROM RATING WHERE rid IN(SELECT rid FROM REVIEWER WHERE rname="Sarah Martinez");
++------+------+-------+------------+
+| rid  | mid  | stars | rdate      |
++------+------+-------+------------+
+|  201 |  101 |     2 | 2011-01-22 |
+|  201 |  101 |     4 | 2011-01-27 |
++------+------+-------+------------+
+2 rows in set (0.00 sec)
+
+b)
+SELECT * FROM RATING WHERE rid NOT IN(SELECT rid FROM REVIEWER WHERE rname="Sarah Martinez");
++------+------+-------+------------+
+| rid  | mid  | stars | rdate      |
++------+------+-------+------------+
+|  202 |  106 |     4 | NULL       |
+|  203 |  103 |     2 | 2011-01-20 |
+|  203 |  108 |     4 | 2011-01-12 |
+|  203 |  108 |     2 | 2011-01-30 |
+|  204 |  101 |     3 | 2011-01-09 |
+|  205 |  103 |     3 | 2011-01-27 |
+|  205 |  104 |     2 | 2011-01-22 |
+|  205 |  108 |     4 | NULL       |
+|  206 |  107 |     3 | 2011-01-15 |
+|  206 |  106 |     5 | 2011-01-19 |
+|  207 |  107 |     5 | 2011-01-20 |
+|  208 |  104 |     3 | 2011-01-02 |
++------+------+-------+------------+
+12 rows in set (0.00 sec)
+
+
+03)
+a)
+SELECT mid FROM RATING WHERE stars < ANY (SELECT stars FROM RATING WHERE mid=103);
++------+
+| mid  |
++------+
+|  101 |
+|  103 |
+|  108 |
+|  104 |
++------+
+4 rows in set (0.00 sec)
+
+b)
+SELECT mid FROM RATING WHERE stars <= ANY (SELECT stars FROM RATING WHERE mid=103);
++------+
+| mid  |
++------+
+|  101 |
+|  103 |
+|  108 |
+|  101 |
+|  103 |
+|  104 |
+|  107 |
+|  104 |
++------+
+8 rows in set (0.00 sec)
+
+c)
+SELECT mid FROM RATING WHERE stars = ANY (SELECT stars FROM RATING WHERE mid=103);
++------+
+| mid  |
++------+
+|  101 |
+|  103 |
+|  108 |
+|  101 |
+|  103 |
+|  104 |
+|  107 |
+|  104 |
++------+
+8 rows in set (0.00 sec)
+
+d)
+SELECT mid FROM RATING WHERE stars > ANY (SELECT stars FROM RATING WHERE mid=103);
++------+
+| mid  |
++------+
+|  101 |
+|  106 |
+|  108 |
+|  101 |
+|  103 |
+|  108 |
+|  107 |
+|  106 |
+|  107 |
+|  104 |
++------+
+10 rows in set (0.00 sec)
+
+e)
+SELECT mid FROM RATING WHERE stars >= ANY (SELECT stars FROM RATING WHERE mid=103);
++------+
+| mid  |
++------+
+|  101 |
+|  101 |
+|  106 |
+|  103 |
+|  108 |
+|  108 |
+|  101 |
+|  103 |
+|  104 |
+|  108 |
+|  107 |
+|  106 |
+|  107 |
+|  104 |
++------+
+14 rows in set (0.00 sec)
+
+f)
+SELECT mid FROM RATING WHERE stars <> ANY (SELECT stars FROM RATING WHERE mid=103);
++------+
+| mid  |
++------+
+|  101 |
+|  101 |
+|  106 |
+|  103 |
+|  108 |
+|  108 |
+|  101 |
+|  103 |
+|  104 |
+|  108 |
+|  107 |
+|  106 |
+|  107 |
+|  104 |
++------+
+14 rows in set (0.00 sec)
+
+
+04)
+SELECT rid FROM RATING WHERE mid IN (SELECT mid FROM RATING WHERE rdate="2011-01-12") AND stars IN (SELECT stars FROM RATING WHERE rdate="2011-01-12");
++------+
+| rid  |
++------+
+|  203 |
+|  205 |
++------+
+2 rows in set (0.00 sec)
+
+
+05)
+a)
+SELECT DISTINCT year FROM MOVIE,RATING WHERE MOVIE.mid=RATING.mid AND (RATING.stars=4 OR RATING.stars=5) ORDER BY year ASC;
++------+
+| year |
++------+
+| 1937 |
+| 1939 |
+| 1981 |
+| 2009 |
++------+
+4 rows in set (0.03 sec)
+
+b)
+SELECT  year FROM MOVIE WHERE mid IN (SELECT mid FROM RATING WHERE stars=4 OR stars=5) ORDER BY year ASC;
++------+
+| year |
++------+
+| 1937 |
+| 1939 |
+| 1981 |
+| 2009 |
++------+
+4 rows in set (0.00 sec)
+
+
+6)
+a)
+SELECT title FROM MOVIE WHERE mid NOT IN (SELECT mid FROM RATING);
++-----------+
+| title     |
++-----------+
+| Star Wars |
+| Titanic   |
++-----------+
+2 rows in set (0.00 sec)
+
+b)
+SELECT title FROM MOVIE t1 WHERE mid <> ALL (SELECT mid FROM RATING t2 WHERE t1.mid=t2.mid);
++-----------+
+| title     |
++-----------+
+| Star Wars |
+| Titanic   |
++-----------+
+2 rows in set (0.00 sec)
+
+
+07)
+a)
+SELECT rname FROM REVIEWER,RATING WHERE RATING.rid=REVIEWER.rid AND RATING.rdate IS NULL;
++---------------+
+| rname         |
++---------------+
+| Daniel Lewis  |
+| Chris Jackson |
++---------------+
+2 rows in set (0.00 sec)
+
+b)
+SELECT rname FROM REVIEWER WHERE rid IN (SELECT rid FROM RATING WHERE rdate IS NULL);
++---------------+
+| rname         |
++---------------+
+| Daniel Lewis  |
+| Chris Jackson |
++---------------+
+2 rows in set (0.00 sec)
+
+c)
+SELECT rname FROM REVIEWER t1 WHERE rid= ANY (SELECT rid FROM RATING t2 WHERE rdate IS NULL AND t1.rid=t2.rid);
++---------------+
+| rname         |
++---------------+
+| Daniel Lewis  |
+| Chris Jackson |
++---------------+
+2 rows in set (0.00 sec)
+
+
+08)
+a)
+SELECT title,MAX(stars) FROM MOVIE,RATING WHERE MOVIE.mid=RATING.mid GROUP BY MOVIE.mid ORDER BY MOVIE.title ASC;
++-------------------------+------------+
+| title                   | MAX(stars) |
++-------------------------+------------+
+| Avatar                  |          5 |
+| E.T.                    |          3 |
+| Gone with the Wind      |          4 |
+| Raiders of the Lost Ark |          4 |
+| Snow White              |          5 |
+| The Sound of Music      |          3 |
++-------------------------+------------+
+6 rows in set (0.00 sec)
+
+b)
+SELECT title,MIN(stars) FROM MOVIE,RATING WHERE MOVIE.mid=RATING.mid GROUP BY MOVIE.mid ORDER BY MOVIE.title ASC;
++-------------------------+------------+
+| title                   | MIN(stars) |
++-------------------------+------------+
+| Avatar                  |          3 |
+| E.T.                    |          2 |
+| Gone with the Wind      |          2 |
+| Raiders of the Lost Ark |          2 |
+| Snow White              |          4 |
+| The Sound of Music      |          2 |
++-------------------------+------------+
+6 rows in set (0.00 sec)
+
+c)
+SELECT title,AVG(stars) FROM MOVIE,RATING WHERE MOVIE.mid=RATING.mid GROUP BY MOVIE.mid ORDER BY MOVIE.title ASC;
++-------------------------+------------+
+| title                   | AVG(stars) |
++-------------------------+------------+
+| Avatar                  |     4.0000 |
+| E.T.                    |     2.5000 |
+| Gone with the Wind      |     3.0000 |
+| Raiders of the Lost Ark |     3.3333 |
+| Snow White              |     4.5000 |
+| The Sound of Music      |     2.5000 |
++-------------------------+------------+
+6 rows in set (0.04 sec)
+
+d)
+SELECT title,SUM(stars) FROM MOVIE,RATING WHERE MOVIE.mid=RATING.mid GROUP BY MOVIE.mid ORDER BY MOVIE.title ASC;
++-------------------------+------------+
+| title                   | SUM(stars) |
++-------------------------+------------+
+| Avatar                  |          8 |
+| E.T.                    |          5 |
+| Gone with the Wind      |          9 |
+| Raiders of the Lost Ark |         10 |
+| Snow White              |          9 |
+| The Sound of Music      |          5 |
++-------------------------+------------+
+6 rows in set (0.04 sec)
+
+e)
+SELECT title,COUNT(*) FROM MOVIE,RATING WHERE MOVIE.mid=RATING.mid GROUP BY MOVIE.mid ORDER BY MOVIE.title ASC;
++-------------------------+----------+
+| title                   | COUNT(*) |
++-------------------------+----------+
+| Avatar                  |        2 |
+| E.T.                    |        2 |
+| Gone with the Wind      |        3 |
+| Raiders of the Lost Ark |        3 |
+| Snow White              |        2 |
+| The Sound of Music      |        2 |
++-------------------------+----------+
+6 rows in set (0.00 sec)
+
+
+09)
+a)
+SELECT rname FROM REVIEWER,RATING WHERE RATING.rid=REVIEWER.rid GROUP BY RATING.rid HAVING COUNT(*) >= 3;
++-----------------+
+| rname           |
++-----------------+
+| Brittany Harris |
+| Chris Jackson   |
++-----------------+
+2 rows in set (0.00 sec)
+
+b)
+SELECT rname FROM REVIEWER WHERE rid IN (SELECT rid FROM RATING GROUP BY RATING.rid HAVING COUNT(*) >= 3);
++-----------------+
+| rname           |
++-----------------+
+| Brittany Harris |
+| Chris Jackson   |
++-----------------+
+2 rows in set (0.00 sec)
+
+c)
+SELECT rname FROM REVIEWER t1 WHERE 3<= ANY (SELECT COUNT(*) FROM RATING t2 WHERE t1.rid=t2.rid);
++-----------------+
+| rname           |
++-----------------+
+| Brittany Harris |
+| Chris Jackson   |
++-----------------+
+2 rows in set (0.00 sec)
+
+
+10)
+SELECT RATING.mid,title,RATING.rid,stars FROM MOVIE,RATING,REVIEWER WHERE MOVIE.mid=RATING.mid AND REVIEWER.rid=RATING.rid;
++------+-------------------------+------+-------+
+| mid  | title                   | rid  | stars |
++------+-------------------------+------+-------+
+|  101 | Gone with the Wind      |  201 |     2 |
+|  101 | Gone with the Wind      |  201 |     4 |
+|  106 | Snow White              |  202 |     4 |
+|  103 | The Sound of Music      |  203 |     2 |
+|  108 | Raiders of the Lost Ark |  203 |     4 |
+|  108 | Raiders of the Lost Ark |  203 |     2 |
+|  101 | Gone with the Wind      |  204 |     3 |
+|  103 | The Sound of Music      |  205 |     3 |
+|  104 | E.T.                    |  205 |     2 |
+|  108 | Raiders of the Lost Ark |  205 |     4 |
+|  107 | Avatar                  |  206 |     3 |
+|  106 | Snow White              |  206 |     5 |
+|  107 | Avatar                  |  207 |     5 |
+|  104 | E.T.                    |  208 |     3 |
++------+-------------------------+------+-------+
+14 rows in set (0.00 sec)
+
+
+11)
+SELECT title,AVG(stars) FROM MOVIE,RATING WHERE MOVIE.mid=RATING.mid GROUP BY MOVIE.mid ORDER BY AVG(stars) desc,title ASC;
++-------------------------+------------+
+| title                   | AVG(stars) |
++-------------------------+------------+
+| Snow White              |     4.5000 |
+| Avatar                  |     4.0000 |
+| Raiders of the Lost Ark |     3.3333 |
+| Gone with the Wind      |     3.0000 |
+| E.T.                    |     2.5000 |
+| The Sound of Music      |     2.5000 |
++-------------------------+------------+
+6 rows in set (0.00 sec)
+
+
+12)
+DELETE FROM RATING WHERE mid IN (SELECT mid FROM MOVIE WHERE year < 1970 OR year > 2000);
+Query OK, 9 rows affected (0.09 sec)
+
+SELECT * FROM RATING;
++------+------+-------+------------+
+| rid  | mid  | stars | rdate      |
++------+------+-------+------------+
+|  203 |  108 |     4 | 2011-01-12 |
+|  203 |  108 |     2 | 2011-01-30 |
+|  205 |  104 |     2 | 2011-01-22 |
+|  205 |  108 |     4 | NULL       |
+|  208 |  104 |     3 | 2011-01-02 |
++------+------+-------+------------+
+5 rows in set (0.00 sec)
+
+
+13)
+DELETE FROM RATING WHERE rdate IS NULL;
+Query OK, 1 row affected (0.06 sec)
+
+SELECT * FROM RATING;
++------+------+-------+------------+
+| rid  | mid  | stars | rdate      |
++------+------+-------+------------+
+|  203 |  108 |     4 | 2011-01-12 |
+|  203 |  108 |     2 | 2011-01-30 |
+|  205 |  104 |     2 | 2011-01-22 |
+|  208 |  104 |     3 | 2011-01-02 |
++------+------+-------+------------+
+4 rows in set (0.00 sec)
+
+
+14)
+UPDATE RATING,MOVIE SET stars=5 WHERE director="James Cameron" AND RATING.mid=MOVIE.mid;
+Query OK, 1 row affected (0.06 sec)
+Rows matched: 2  Changed: 1  Warnings: 0
+
+SELECT * FROM RATING;
++------+------+-------+------------+
+| rid  | mid  | stars | rdate      |
++------+------+-------+------------+
+|  201 |  101 |     2 | 2011-01-22 |
+|  201 |  101 |     4 | 2011-01-27 |
+|  202 |  106 |     4 | NULL       |
+|  203 |  103 |     2 | 2011-01-20 |
+|  203 |  108 |     4 | 2011-01-12 |
+|  203 |  108 |     2 | 2011-01-30 |
+|  204 |  101 |     3 | 2011-01-09 |
+|  205 |  103 |     3 | 2011-01-27 |
+|  205 |  104 |     2 | 2011-01-22 |
+|  205 |  108 |     4 | NULL       |
+|  206 |  107 |     5 | 2011-01-15 |
+|  206 |  106 |     5 | 2011-01-19 |
+|  207 |  107 |     5 | 2011-01-20 |
+|  208 |  104 |     3 | 2011-01-02 |
++------+------+-------+------------+
+14 rows in set (0.00 sec)
+
+
+15)
+UPDATE MOVIE SET year=year+25 WHERE mid IN (SELECT r.mid FROM RATING r GROUP BY r.mid HAVING AVG(stars) >= 4);
+Query OK, 2 rows affected (0.12 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+SELECT * FROM MOVIE;
++-----+-------------------------+------+------------------+
+| mid | title                   | year | director         |
++-----+-------------------------+------+------------------+
+| 101 | Gone with the Wind      | 1939 | Victor Fleming   |
+| 102 | Star Wars               | 1977 | George Lucas     |
+| 103 | The Sound of Music      | 1965 | Robert Wise      |
+| 104 | E.T.                    | 1982 | Steven Spieibrg  |
+| 105 | Titanic                 | 1997 | James Cameron    |
+| 106 | Snow White              | 1962 | NULL             |
+| 107 | Avatar                  | 2034 | James Cameron    |
+| 108 | Raiders of the Lost Ark | 1981 | Steven Spielberg |
++-----+-------------------------+------+------------------+
+8 rows in set (0.00 sec)
+
